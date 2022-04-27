@@ -1,0 +1,79 @@
+* Installation
+Just press this button:
+#+begin_src elisp
+  (defun c.install ()
+    (with-temp-buffer
+      (insert-file-contents "/etc/issue")
+      (let ((os (pcase buffer-string
+		  ((rx "Welcome to the GNU system!" "guix")) ; not ideal, but I use only guix Hurd.. and never Trisquel
+		  ((rx "Debian GNU/Linux 11") "debian11")
+		  ((rx "Arch Linux" "arch")))))
+	(async-shell-command (concat "source .i/" os)))))
+  ;; detect os
+#+end_src
+** Guix
+#+begin_src sh :tangle guix.sh
+  $HERE=~/.config/guix
+  cp -r .i/guix/ $HERE
+  guix pull
+  guix install -m $HERE/manifest.scm
+  guix system reconfigure $HERE/cfg.scm
+#+end_src
+*** Manifest 
+#+begin_src scheme :tangle manifest.scm
+#+end_src
+*** Channels
+#+begin_src scheme :tangle channels.scm
+  (cons* (channel
+	  (name 'nonguix)
+	  (url "https://gitlab.com/nonguix/nonguix")
+	  ;; Enable signature verification:
+	  (introduction
+	   (make-channel-introduction
+	    "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+	    (openpgp-fingerprint
+	     "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+	 %default-channels)
+#+end_src
+** Arch
+#+begin_src sh
+#+end_src
+*** Manifest
+** Debian
+#+begin_src sh
+#+end_src
+*** Sources
+#+begin_example :tangle /etc/apt/sources.list
+  deb http://deb.debian.org/debian/ bullseye main
+  deb-src http://deb.debian.org/debian/ bullseye main
+
+  deb http://security.debian.org/debian-security bullseye-security main
+  deb-src http://security.debian.org/debian-security bullseye-security main
+
+  deb http://deb.debian.org/debian/ bullseye-updates main
+  deb-src http://deb.debian.org/debian/ bullseye-updates main
+
+  deb http://deb.debian.org/debian/ bullseye-backports main
+  deb-src http://deb.debian.org/debian/ bullseye-backports main
+#+end_example
+*** Manifest
+
+*** From source
+
+**** Emacs
+#+begin_src sh
+  git clone https://github.com/emacs-mirror/emacs ~/p/
+  cd ~/p/emacs
+  ./configure --without-gconf --without-gsettings --with-modules --without-libotf --without-m17n-flt --enable-link-time-optimization --with-native-compilation --with-pgtk
+  make NATIVE_FULL_AOT=1 -j$(nproc)
+  make install 
+#+end_src
+**** Sway
+#+begin_src sh
+  git clone https://git.sr.ht/~sircmpwn/sway ~/p/
+  cd ~/p/sway
+  apt build-dep sway
+  meson build
+  ninja -C build
+  sudo ninja -C build install
+#+end_src
