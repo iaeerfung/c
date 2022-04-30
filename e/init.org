@@ -1,6 +1,0 @@
-* Installation
-Emacs is so special omg, I build ~latest from git.
-- Guix :: https://github.com/flatwhatson/guix-channel
-  - [] Modify it to use emacs 29. 
-- Arch :: https://aur.archlinux.org/emacs-pgtk-native-comp-git.git
-- Debian :: ganneff.de https://www.emacswiki.org/emacs/EmacsSnapshotAndDebian#h5o-3

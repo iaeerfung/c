@@ -1,1 +1,0 @@
-Stimulators, gallucinogens, euphoretics. 
